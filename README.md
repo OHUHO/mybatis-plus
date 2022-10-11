@@ -593,6 +593,80 @@ public void testSelect(){
 
 ### 3.6、通用Service
 
+> 说明:
+>
+> - 通用 Service CRUD 封装[IService (opens new window)](https://gitee.com/baomidou/mybatis-plus/blob/3.0/mybatis-plus-extension/src/main/java/com/baomidou/mybatisplus/extension/service/IService.java)接口，进一步封装 CRUD 采用 `get 查询单行` `remove 删除` `list 查询集合` `page 分页` 前缀命名方式区分 `Mapper` 层避免混淆，
+> - 泛型 `T` 为任意实体对象
+> - 建议如果存在自定义通用 Service 方法的可能，请创建自己的 `IBaseService` 继承 `Mybatis-Plus` 提供的基类
+> - 对象 `Wrapper` 为 [条件构造器](https://baomidou.com/01.指南/02.核心功能/wrapper.html)
+
+
+
+#### 3.6.1、IService
+
+MyBatis-Plus中有一个接口 IService和其实现类 ServiceImpl，封装了常见的业务层逻辑 
+
+详情查看源码IService和ServiceImpl
+
+#### 3.6.2、创建Service接口和实现类
+
+```java
+/**
+ *  UserService继承IService模板提供的基础功能
+ */
+public interface UserService extends IService<User> {
+}
+```
+
+```java
+/**
+ * ServiceImpl实现了IService，提供了IService中基础功能的实现
+ * 若ServiceImpl无法满足业务需求，则可以使用自定的UserService定义方法，并在实现类中实现
+ */
+@Service
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+}
+```
+
+#### 3.6.3、测试查询记录数
+
+```java
+@Autowired
+private UserService userService;
+
+@Test
+public void test(){
+    long count = userService.count();
+    System.out.println(count);
+}
+```
+
+#### 3.6.4、测试批量插入
+
+```java
+@Test
+public void testInsertMore(){
+    ArrayList<User> list = new ArrayList<>();
+    for (int i = 1; i <= 10; i++) {
+        User user = new User();
+        user.setName("jingchao"+i);
+        user.setAge(18+i);
+        user.setEmail("jingchao"+i+"@gmail.com");
+        list.add(user);
+    }
+    boolean b = userService.saveBatch(list);
+    System.out.println(b);
+}
+```
+
+
+
+## 4、常用注解
+
+
+
+
+
 
 
 
