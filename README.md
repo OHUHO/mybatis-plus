@@ -673,12 +673,17 @@ public void testInsertMore(){
 
 > 我们将表user更名为t_user，测试查询功能 程序抛出异常，Table 'mybatis_plus.user' doesn't exist，因为现在的表名为t_user，而默认操作 的表名和实体类型的类名一致，即user表
 
+| ![image-20221011112207637](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210111122713.png) |
+| :----------------------------------------------------------: |
+
+
+
 #### 4.1.2、通过@TableName解决问题
 
 > 在实体类类型上添加@TableName("t_user")，标识实体类对应的表，即可成功执行SQL语句
 
-|      |
-| :--: |
+| ![image-20221011112509572](C:\Users\Aubuary\AppData\Roaming\Typora\typora-user-images\image-20221011112509572.png) |
+| :----------------------------------------------------------: |
 
 #### 4.1.3、通过全局配置解决问题
 
