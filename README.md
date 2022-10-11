@@ -663,13 +663,76 @@ public void testInsertMore(){
 
 ## 4、常用注解
 
+### 4.1、@TableName
+
+> 经过以上的测试，在使用MyBatis-Plus实现基本的CRUD时，我们并没有指定要操作的表，只是在 Mapper接口继承BaseMapper时，设置了泛型User，而操作的表为user表 由此得出结论，MyBatis-Plus在确定操作的表时，由BaseMapper的泛型决定，即实体类型决 定，且默认操作的表名和实体类型的类名一致
+
+#### 4.1.1、问题
+
+**若实体类类型的类名和要操作的表的表名不一致，会出现什么问题？**
+
+> 我们将表user更名为t_user，测试查询功能 程序抛出异常，Table 'mybatis_plus.user' doesn't exist，因为现在的表名为t_user，而默认操作 的表名和实体类型的类名一致，即user表
+
+#### 4.1.2、通过@TableName解决问题
+
+> 在实体类类型上添加@TableName("t_user")，标识实体类对应的表，即可成功执行SQL语句
+
+|      |
+| :--: |
+
+#### 4.1.3、通过全局配置解决问题
+
+> 在开发的过程中，我们经常遇到以上的问题，即实体类所对应的表都有固定的前缀，例如 t_ 或 tbl_ 此时，可以使用MyBatis-Plus提供的全局配置，为实体类所对应的表名设置默认的前缀，那么就 不需要在每个实体类上通过@TableName标识实体类对应的表
+
+```yaml
+mybatis-plus:
+  configuration:
+    # 配置MyBatis日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      # 配置表的默认前缀
+      table-prefix: t_
+```
+
+
+
+### 4.2、@TableId
+
+> 经过以上的测试，MyBatis-Plus在实现CRUD时，会默认将id作为主键列，并在插入数据时，默认 基于雪花算法的策略生成id
+
+#### 4.2.1、问题
+
+**若实体类和表中表示主键的不是id，而是其他字段，例如uid，MyBatis-Plus会自动识别uid为主 键列吗？**
+
+> 我们实体类中的属性id改为uid，将表中的字段id也改为uid，测试添加功能
+>
+> 程序抛出异常，Field 'uid' doesn't have a default value，说明MyBatis-Plus没有将uid作为主键赋值
+
+
+
+#### 4.2.2、通过@TableId解决问题
+
+> 在实体类中uid属性上通过@TableId将其标识为主键，即可成功执行SQL语句
+
+|      |
+| :--: |
+
+##### ① @TableId的value属性
+
+
+
+##### ② @TableId的type属性
+
+
+
+#### 4.2.3、雪花算法
 
 
 
 
 
-
-
+### 4.3、@TableField
 
 
 
