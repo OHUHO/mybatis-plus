@@ -901,7 +901,7 @@ mybatis-plus:
 
 ## 5、条件构造器和常用接口
 
-## 5.1、wrapper介绍
+### 5.1、wrapper介绍
 
 | ![image-20221012102824403](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210121328525.png) |
 | :----------------------------------------------------------: |
@@ -1094,6 +1094,92 @@ public void test10(){
 
 
 ### 5.5、LambdaQueryWrapper
+
+```java
+@Test
+public void test11(){
+    String username = "a";
+    Integer ageBegin = null;
+    Integer ageEnd = 30;
+    LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+    queryWrapper.like(StringUtils.isNotBlank(username), User::getName, username)
+        .ge(ageBegin != null, User::getAge, ageBegin)
+        .le(ageEnd != null, User::getAge, ageEnd);
+    List<User> list = userMapper.selectList(queryWrapper);
+    list.forEach(System.out::println);
+}
+```
+
+### 5.6、LambdaUpdateWrapper
+
+```java
+@Test
+public void test12(){
+    // 将用户名中包含 a 并且（年龄大于20或邮箱为null）的用户信息修改
+    LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+    updateWrapper.like(User::getName, "a")
+        .and(i -> i.gt(User::getAge, 20)
+             .or()
+             .isNull(User::getEmail)
+            );
+    updateWrapper.set(User::getName, "小红").set(User::getEmail, "jc@qq.com");
+    int result = userMapper.update(null, updateWrapper);
+    System.out.println(result);
+}
+```
+
+
+
+## 6、插件
+
+### 6.1、分页插件
+
+> MyBatis Plus自带分页插件，只要简单的配置即可实现分页功能
+
+#### 6.1.1、添加配置类
+
+```java
+@Configuration
+@MapperScan("com.jingchao.mybatisplus.mapper")
+public class MyBatisPlusConfig {
+
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor(){
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+        return interceptor;
+    }
+}
+```
+
+#### 6.1.2、测试
+
+```java
+@Test
+public void testPage(){
+    Page<User> page = new Page<>(2,3);
+    userMapper.selectPage(page, null);
+    //获取分页数据
+    List<User> list = page.getRecords();
+    list.forEach(System.out::println);
+    System.out.println("当前页："+page.getCurrent());
+    System.out.println("每页显示的条数："+page.getSize());
+    System.out.println("总记录数："+page.getTotal());
+    System.out.println("总页数："+page.getPages());
+    System.out.println("是否有上一页："+page.hasPrevious());
+    System.out.println("是否有下一页："+page.hasNext());
+}
+```
+
+
+
+### 6.2、xml自定义分页
+
+#### 6.1.3、UserMapper中定义接口方法
+
+
+
+
 
 
 
