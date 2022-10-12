@@ -916,6 +916,66 @@ mybatis-plus:
 
 ### 5.2、QueryWrapper
 
+#### 5.2.1、组装查询条件
+
+```java
+@Test
+public void test01(){
+    // 查询用户名包含 a , 年龄 20 ~ 30 , 邮箱不为null
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.like("user_name", "a")
+        .between("age", 20, 30)
+        .isNotNull("email");
+    List<User> list = userMapper.selectList(queryWrapper);
+    list.forEach(System.out::println);
+}
+```
+
+#### 5.2.2、组装排序条件
+
+```java
+@Test
+public void  test02(){
+    // 查询用户信息，按照年龄降序排列，id升序排列
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.orderByDesc("age")
+        .orderByAsc("uid");
+    List<User> list = userMapper.selectList(queryWrapper);
+    list.forEach(System.out::println);
+}
+```
+
+#### 5.2.3、组装删除条件
+
+```java
+@Test
+public void test03(){
+    // 删除邮箱信息为 null 的记录
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.isNull("email");
+    int result = userMapper.delete(queryWrapper);
+    System.out.println(result);
+}
+```
+
+#### 5.2.4、条件的优先级
+
+
+
+
+
+#### 5.2.5、组装select子句
+
+
+
+#### 5.2.6、实现子查询
+
+
+
+### 5.3、UpdateWrapper
+
+
+
 
 
 
