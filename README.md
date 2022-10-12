@@ -840,11 +840,81 @@ mybatis-plus:
 
 ### 4.3、@TableField
 
+经过以上的测试，我们可以发现，MyBatis-Plus在执行SQL语句时，要保证实体类中的属性名和 表中的字段名一致 
+
+如果实体类中的属性名和字段名不一致的情况，会出现什么问题呢？
+
+#### 4.3.1、情况一
+
+> 若实体类中的属性使用的是驼峰命名风格，而表中的字段使用的是下划线命名风格 
+>
+> 例如实体类属性userName，表中字段user_name 
+>
+> 此时MyBatis-Plus会自动将下划线命名风格转化为驼峰命名风格 相当于在MyBatis中配置
+
+#### 4.3.2、情况二
+
+> 若实体类中的属性和表中的字段不满足情况1 
+>
+> 例如实体类属性name，表中字段username 
+>
+> 此时需要在实体类属性上使用@TableField("username")设置属性所对应的字段名
+
+| ![image-20221012100641761](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210121006886.png) |
+| :----------------------------------------------------------: |
+
+### 4.4、@TableLogic
+
+#### 4.4.1、逻辑删除
+
+- 物理删除：真实删除，将对应数据从数据库中删除，之后查询不到此条被删除的数据 
+- 逻辑删除：假删除，将对应数据中代表是否被删除字段的状态修改为“被删除状态”，之后在数据库 中仍旧能看到此条数据记录 
+- 使用场景：可以进行数据恢复
+
+#### 4.4.2、实现逻辑删除
+
+1. step1：数据库中创建逻辑删除状态列，设置默认值为0
+
+	| ![image-20221012101311538](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210121013625.png) |
+	| :----------------------------------------------------------: |
+
+	
+
+2. step2：实体类中添加逻辑删除属性
+
+	| ![image-20221012101458798](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210121014873.png) |
+	| :----------------------------------------------------------: |
+
+	
+
+3. step3：测试
+
+	> 测试删除功能，真正执行的是修改 
+	>
+	> UPDATE t_user SET is_deleted=1 WHERE id=? AND is_deleted=0 
+	>
+	> 测试查询功能，被逻辑删除的数据默认不会被查询 
+	>
+	> SELECT id,username AS name,age,email,is_deleted FROM t_user WHERE is_deleted=0
 
 
 
+## 5、条件构造器和常用接口
 
+## 5.1、wrapper介绍
 
+| ![image-20221012102824403](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210121028472.png) |
+| :----------------------------------------------------------: |
+
+- Wrapper：条件构造抽象类，最顶端父类
+	- AbstractWrapper ： 用于查询条件封装，生成 sql 的 where 条件
+		- QueryWrapper ： 查询条件封装 
+		- UpdateWrapper ： Update 条件封装 
+		- AbstractLambdaWrapper ： 使用Lambda 语法
+			- LambdaQueryWrapper ：用于Lambda语法使用的查询Wrapper
+			- LambdaUpdateWrapper ： Lambda 更新封装Wrapper
+
+### 5.2、QueryWrapper
 
 
 

@@ -76,11 +76,11 @@ public class MyBatisPlusTest {
         List<User> users = userMapper.selectByMap(map);
         users.forEach(System.out::println); */
 
-        /* List<User> users = userMapper.selectList(null);
-        users.forEach(System.out::println); */
+        List<User> users = userMapper.selectList(null);
+        users.forEach(System.out::println);
 
-        Map<String, Object> map = userMapper.selectMapById(1L);
-        System.out.println(map);
+        /* Map<String, Object> map = userMapper.selectMapById(1L);
+        System.out.println(map); */
 
     }
 
