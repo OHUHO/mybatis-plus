@@ -860,7 +860,7 @@ mybatis-plus:
 >
 > 此时需要在实体类属性上使用@TableField("username")设置属性所对应的字段名
 
-| ![image-20221012100641761](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210121006886.png) |
+| ![image-20221012100641761](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210121327738.png) |
 | :----------------------------------------------------------: |
 
 ### 4.4、@TableLogic
@@ -875,14 +875,14 @@ mybatis-plus:
 
 1. step1：数据库中创建逻辑删除状态列，设置默认值为0
 
-	| ![image-20221012101311538](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210121013625.png) |
+	| ![image-20221012101311538](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210121327105.png) |
 	| :----------------------------------------------------------: |
 
 	
 
 2. step2：实体类中添加逻辑删除属性
 
-	| ![image-20221012101458798](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210121014873.png) |
+	| ![image-20221012101458798](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210121329194.png) |
 	| :----------------------------------------------------------: |
 
 	
@@ -903,7 +903,7 @@ mybatis-plus:
 
 ## 5.1、wrapper介绍
 
-| ![image-20221012102824403](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210121028472.png) |
+| ![image-20221012102824403](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210121328525.png) |
 | :----------------------------------------------------------: |
 
 - Wrapper：条件构造抽象类，最顶端父类
@@ -958,23 +958,95 @@ public void test03(){
 }
 ```
 
-#### 5.2.4、条件的优先级
+#### 5.2.4、条件的优先级（实现修改）
 
+```java
+@Test
+public void test04(){
+    // 将 (年龄大于 20 并且用户名中包含 a) 或邮箱为 null的用户信息修改
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.gt("age", 20)
+        .like("user_name","a")
+        .or()
+        .isNull("email");
+    User user = new User();
+    user.setName("小名");
+    user.setEmail("jignchao@qq.com");
+    int result = userMapper.update(user, queryWrapper);
+    System.out.println(result);
+}
+```
 
+```java
+@Test
+public void test05(){
+    // 将用户名中包含 a 并且（年龄大于20或邮箱为null）的用户信息修改
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    // lambda表达式先执行
+    queryWrapper.like("user_name", "a")
+        .and(i -> i.gt("age", 20)
+             .or()
+             .isNull("email")
+            );
 
-
+    User user = new User();
+    user.setAge(18);
+    user.setEmail("jingchao.jc@qq.com");
+    int result = userMapper.update(user, queryWrapper);
+    System.out.println(result);
+}
+```
 
 #### 5.2.5、组装select子句
 
-
+```java
+@Test
+public void test06(){
+    // 查询用户的 user_name 和 age 字段
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.select("user_name", "age");
+    List<Map<String, Object>> maps = userMapper.selectMaps(queryWrapper);
+    maps.forEach(System.out::println);
+}
+```
 
 #### 5.2.6、实现子查询
 
+```java
+@Test
+public void test07(){
+    // 查询 id 小于10的用户信息
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.inSql("uid", "select uid from t_user where uid < 10");
+    List<User> list = userMapper.selectList(queryWrapper);
+    list.forEach(System.out::println);
 
+}
+```
 
 ### 5.3、UpdateWrapper
 
+```java
+@Test
+public void test08(){
+    // 将用户名中包含 a 并且（年龄大于20或邮箱为null）的用户信息修改
+    UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+    updateWrapper.like("user_name", "a")
+        .and(i -> i.gt("age", 20)
+             .or()
+             .isNull("email")
+            );
+    updateWrapper.set("user_name", "小红").set("email", "jc@qq.com");
+    int result = userMapper.update(null, updateWrapper);
+    System.out.println(result);
+}
+```
 
+
+
+### 5.4、condition
+
+> 在真正开发的过程中，组装条件是常见的功能，而这些条件数据来源于用户输入，是可选的，因 此我们在组装这些条件时，必须先判断用户是否选择了这些条件，若选择则需要组装该条件，若 没有选择则一定不能组装，以免影响SQL执行的结果
 
 
 
