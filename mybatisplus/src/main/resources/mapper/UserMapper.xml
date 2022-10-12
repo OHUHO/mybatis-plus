@@ -9,4 +9,10 @@
 	<select id="selectMapById" resultType="map">
 		select id,name,age,email from user where id = #{id}
 	</select>
+
+	<!-- Page<User> selectPageVo(@Param("page") Page<User> page, @Param("age") Integer age); -->
+	<select id="selectPageVo" resultType="User">
+		select uid,user_name,age,email from t_user where age > #{age}
+	</select>
+
 </mapper>

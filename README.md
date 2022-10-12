@@ -1175,7 +1175,124 @@ public void testPage(){
 
 ### 6.2、xml自定义分页
 
-#### 6.1.3、UserMapper中定义接口方法
+#### 6.2.1、UserMapper中定义接口方法
+
+```java
+/**
+ * 通过年龄查询用户信息并分页
+ * @param page MyBatis-Plus 提供的分页参数，必须位于第一个参数的位置
+ * @param age
+ * @return
+ */
+Page<User> selectPageVo(@Param("page") Page<User> page, @Param("age") Integer age);
+```
+
+#### 6.2.2、UserMapper.xml中编写SQL语句
+
+```xml
+<select id="selectPageVo" resultType="User">
+    select uid,user_name,age,email from t_user where age > #{age}
+</select>
+```
+
+#### 6.2.3、测试
+
+```java
+@Test
+public void testPageVo(){
+    Page<User> page = new Page<>(1,3);
+    userMapper.selectPageVo(page, 20);
+    List<User> list = page.getRecords();
+    list.forEach(System.out::println);
+}
+```
+
+
+
+### 6.3、乐观锁
+
+#### 6.3.1、场景
+
+一件商品，成本价是80元，售价是100元。老板先是通知小李，说你去把商品价格增加50元。小李正在玩游戏，耽搁了一个小时。正好一个小时后，老板觉得商品价格增加到150元，价格太高，可能会影响销量。又通知小王，你把商品价格降低30元。 
+
+此时，小李和小王同时操作商品后台系统。小李操作的时候，系统先取出商品价格100元；小王也在操作，取出的商品价格也是100元。小李将价格加了50元，并将100+50=150元存入了数据 库；小王将商品减了30元，并将100-30=70元存入了数据库。是的，如果没有锁，小李的操作就完全被小王的覆盖了。 
+
+现在商品价格是70元，比成本价低10元。几分钟后，这个商品很快出售了1千多件商品，老板亏1 万多。
+
+#### 6.3.2、乐观锁与悲观锁
+
+上面的故事，如果是乐观锁，小王保存价格前，会检查下价格是否被人修改过了。如果被修改过 了，则重新取出的被修改后的价格，150元，这样他会将120元存入数据库。 
+
+如果是悲观锁，小李取出数据后，小王只能等小李操作完之后，才能对价格进行操作，也会保证 最终的价格是120元。
+
+#### 6.3.3、模拟修改冲突
+
+**数据库中添加商品表**
+
+```mysql
+CREATE TABLE t_product
+(
+	id BIGINT(20) NOT NULL COMMENT '主键ID',
+	NAME VARCHAR(30) NULL DEFAULT NULL COMMENT '商品名称',
+	price INT(11) DEFAULT 0 COMMENT '价格',
+	VERSION INT(11) DEFAULT 0 COMMENT '乐观锁版本号',
+	PRIMARY KEY (id)
+);
+```
+
+**添加数据**
+
+```mysql
+INSERT INTO t_product (id, NAME, price) VALUES (1, '外星人笔记本', 100);
+```
+
+**添加实体**
+
+```java
+@Data
+public class Product {
+    private Long id;
+    private String name;
+    private Integer price;
+    private Integer version;
+}
+```
+
+**添加mapper**
+
+```java
+public interface ProductMapper extends BaseMapper<Product> {
+}
+```
+
+**测试**
+
+```java
+@Test
+public void testProduct(){
+    // 小李查询商品价格
+    Product productLi = productMapper.selectById(1L);
+    System.out.println("productLi = " + productLi);
+
+    // 小王查询商品价格
+    Product productWang = productMapper.selectById(1L);
+    System.out.println("productWang = " + productWang);
+
+    // 小李价格加 50，存入数据库
+    productLi.setPrice(productLi.getPrice() + 50);
+    productMapper.updateById(productLi);
+
+    // 小王价格减 30，存入数据库
+    productWang.setPrice(productWang.getPrice() - 30);
+    productMapper.updateById(productWang);
+
+    // 最后结果
+    Product product = productMapper.selectById(1L);
+    System.out.println("product = " + product);
+}
+```
+
+#### 6.3.4、乐观锁实现流程
 
 
 
