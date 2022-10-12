@@ -1048,6 +1048,53 @@ public void test08(){
 
 > 在真正开发的过程中，组装条件是常见的功能，而这些条件数据来源于用户输入，是可选的，因 此我们在组装这些条件时，必须先判断用户是否选择了这些条件，若选择则需要组装该条件，若 没有选择则一定不能组装，以免影响SQL执行的结果
 
+**思路一**
+
+```java
+@Test
+public void test09(){
+    // 定义查询条件
+    String username = "";
+    Integer ageBegin = 18;
+    Integer ageEnd = 30;
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    if (StringUtils.isNotBlank(username)){
+        queryWrapper.like("user_name", "a");
+    }
+    if (ageBegin != null){
+        queryWrapper.ge("age", ageBegin);
+    }
+    if (ageEnd != null){
+        queryWrapper.le("age", ageEnd);
+    }
+    List<User> list = userMapper.selectList(queryWrapper);
+    list.forEach(System.out::println);
+}
+```
+
+**思路二**
+
+上面的实现方案没有问题，但是代码比较复杂，我们可以使用带condition参数的重载方法构建查询条件，简化代码的编写
+
+```java
+@Test
+public void test10(){
+    String username = "";
+    Integer ageBegin = 18;
+    Integer ageEnd = 30;
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.like(StringUtils.isNotBlank(username), "user_name", "a")
+        .ge(ageBegin != null, "age", ageBegin)
+        .le(ageEnd != null, "age", ageEnd);
+    List<User> list = userMapper.selectList(queryWrapper);
+    list.forEach(System.out::println);
+}
+```
+
+
+
+### 5.5、LambdaQueryWrapper
+
 
 
 

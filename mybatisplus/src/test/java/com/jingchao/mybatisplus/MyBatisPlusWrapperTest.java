@@ -3,6 +3,7 @@ package com.jingchao.mybatisplus;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.jingchao.mybatisplus.mapper.UserMapper;
 import com.jingchao.mybatisplus.pojo.User;
 import org.junit.jupiter.api.Test;
@@ -112,6 +113,39 @@ public class MyBatisPlusWrapperTest {
         updateWrapper.set("user_name", "小红").set("email", "jc@qq.com");
         int result = userMapper.update(null, updateWrapper);
         System.out.println(result);
+    }
+
+    @Test
+    public void test09(){
+        // 定义查询条件
+        String username = "";
+        Integer ageBegin = 18;
+        Integer ageEnd = 30;
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        if (StringUtils.isNotBlank(username)){
+            queryWrapper.like("user_name", "a");
+        }
+        if (ageBegin != null){
+            queryWrapper.ge("age", ageBegin);
+        }
+        if (ageEnd != null){
+            queryWrapper.le("age", ageEnd);
+        }
+        List<User> list = userMapper.selectList(queryWrapper);
+        list.forEach(System.out::println);
+    }
+
+    @Test
+    public void test10(){
+        String username = "";
+        Integer ageBegin = 18;
+        Integer ageEnd = 30;
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotBlank(username), "user_name", "a")
+                .ge(ageBegin != null, "age", ageBegin)
+                .le(ageEnd != null, "age", ageEnd);
+        List<User> list = userMapper.selectList(queryWrapper);
+        list.forEach(System.out::println);
     }
 
 }
