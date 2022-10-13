@@ -1,6 +1,7 @@
 package com.jingchao.mybatisplus.pojo;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.jingchao.mybatisplus.enums.SexEnums;
 import lombok.*;
 
 @Data
@@ -16,6 +17,8 @@ public class User {
     private Integer age;
 
     private String email;
+
+    private SexEnums sex;
 
     @TableLogic
     private Integer isDelete;

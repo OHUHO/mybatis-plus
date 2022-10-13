@@ -1371,11 +1371,121 @@ public class MyBatisPlusConfig {
 
 **优化流程**
 
+```java
+@Test
+public void testProduct(){
+    // 小李查询商品价格
+    Product productLi = productMapper.selectById(1L);
+    System.out.println("productLi = " + productLi);
+
+    // 小王查询商品价格
+    Product productWang = productMapper.selectById(1L);
+    System.out.println("productWang = " + productWang);
+
+    // 小李价格加 50，存入数据库
+    productLi.setPrice(productLi.getPrice() + 50);
+    productMapper.updateById(productLi);
+
+    // 小王价格减 30，存入数据库
+    productWang.setPrice(productWang.getPrice() - 30);
+    int result = productMapper.updateById(productWang);
+    if (result == 0){
+        // 操作失败，重试
+        Product productNew = productMapper.selectById(1L);
+        productNew.setPrice(productNew.getPrice() - 30);
+        productMapper.updateById(productNew);
+    }
+
+    // 最后结果
+    Product product = productMapper.selectById(1L);
+    System.out.println("product = " + product);
+}
+```
+
 
 
 ## 7、通用枚举
 
+表中的有些字段值是固定的，例如性别（男或女），此时我们可以使用MyBatis-Plus的通用枚举 来实现
 
+### 7.1、数据库添加sex字段
+
+| ![image-20221013120311885](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210131203052.png) |
+| :----------------------------------------------------------: |
+
+### 7.2、创建通用枚举类类型
+
+```java
+@Getter
+public enum SexEnums {
+    MALE(1,"男"),
+    FEMALE(2,"nv");
+
+    @EnumValue
+    private Integer sex;
+
+    private String sexName;
+
+    SexEnums(Integer sex, String sexName) {
+        this.sex = sex;
+        this.sexName = sexName;
+    }
+}
+```
+
+### 7.3、配置扫描通用枚举
+
+```yaml
+mybatis-plus:
+  configuration:
+    # 配置 MyBatis日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      # 配置表的默认前缀
+      table-prefix: t_
+      # 设置统一的主键生成策略
+      id-type: auto
+  type-aliases-package: com.jingchao.mybatisplus.pojo
+  # 扫描通用枚举的包
+  type-enums-package: com.jingchao.mybatisplus.enums
+```
+
+### 7.4、测试
+
+```java
+@Test
+public void test(){
+    User user = new User();
+    user.setName("admin");
+    user.setAge(25);
+    //设置性别信息为枚举项，会将@EnumValue注解所标识的属性值存储到数据库
+    user.setSex(SexEnums.MALE);
+    int result = userMapper.insert(user);
+    System.out.println(result);
+}
+```
+
+
+
+## 8、代码生成器
+
+### 8.1、引入依赖
+
+```xml
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus-generator</artifactId>
+    <version>3.5.2</version>
+</dependency>
+<dependency>
+    <groupId>org.freemarker</groupId>
+    <artifactId>freemarker</artifactId>
+    <version>2.3.31</version>
+</dependency>
+```
+
+### 8.2、快速生成
 
 
 
