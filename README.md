@@ -1569,7 +1569,72 @@ DROP TABLE IF EXISTS product;
 说明：注释掉之前的数据库连接，添加新配置
 
 ```yaml
+spring:
+  # 配置数据源信息
+  datasource:
+    dynamic:
+      # 设置默认的数据源或者数据源组,默认值即为master
+      primary: master
+      # 严格匹配数据源,默认false.true未匹配到指定数据源时抛异常,false使用默认数据源
+      strict: false
+      datasource:
+        master:
+          url: jdbc:mysql://localhost:3306/mybatis_plus?characterEncoding=utf-8&useSSL=false
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          username: root
+          password: jc951753
+        slave_1:
+          url: jdbc:mysql://localhost:3306/mybatis_plus_1?characterEncoding=utf-8&useSSL=false
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          username: root
+          password: jc951753
+```
+
+### 9.4、创建用户Service
+
+```java
+public interface UserService extends IService<User>{
+}
+```
+
+```java
+@Service
+@DS("master")
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+}
+```
+
+### 9.5、创建商品Service
+
+```java
+public interface ProductService extends IService<Product> {
+}
+```
+
+```java
+@Service
+@DS("slave_1")
+public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> implements ProductService {
+}
+```
+
+### 9.6、测试
+
+```java
+@Autowired
+private UserService userService;
+
+@Autowired
+private ProductService productService;
+
+@Test
+public void test(){
+    System.out.println(userService.getById(1));
+    System.out.println(productService.getById(1));
+}
 ```
 
 
+
+## 10、MyBatisX插件
 
