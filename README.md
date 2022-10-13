@@ -1487,11 +1487,84 @@ public void test(){
 
 ### 8.2、快速生成
 
+```java
+public class FastAutoGeneratorTest {
+    public static void main(String[] args) {
+        FastAutoGenerator.create("jdbc:mysql://localhost:3306/mybatis_plus?characterEncoding=utf-8&userSSL=false", "root", "jc951753")
+                .globalConfig(builder -> {
+                    builder.author("JingChao") // 设置作者
+                            // .enableSwagger() // 开启 swagger 模式
+                            .fileOverride() // 覆盖已生成文件
+                            .outputDir("E://mybatis_plus"); // 指定输出目录
+                })
+                .packageConfig(builder -> {
+                    builder.parent("com.jingchao") // 设置父包名
+                            .moduleName("mybatisplus") // 设置父包模块名
+                            .pathInfo(Collections.singletonMap(OutputFile.xml, "E://mybatis_plus"));// 设置mapperXml生成路径
+                })
+                .strategyConfig(builder -> {
+                    builder.addInclude("t_user") // 设置需要生成的表名
+                            .addTablePrefix("t_", "c_"); // 设置过滤表前缀
+                })
+                .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker 引擎模板，默认的是Velocity引擎模板
+                .execute();
+    }
+}
+```
+
+[官方文档](https://baomidou.com/pages/779a6e/#%E5%AE%89%E8%A3%85)
+
+## 9、多数据源
+
+适用于多种场景：纯粹多库、 读写分离、 一主多从、 混合模式等 
+
+目前我们就来模拟一个纯粹多库的一个场景，其他场景类似 
+
+场景说明： 我们创建两个库，分别为：mybatis_plus（以前的库不动）与mybatis_plus_1（新建），将 mybatis_plus库的product表移动到mybatis_plus_1库，这样每个库一张表，通过一个测试用例 分别获取用户数据与商品数据，如果获取到说明多库模拟成功
+
+### 9.1、创建数据库及表
+
+创建数据库mybatis_plus_1和表product
+
+```mysql
+CREATE DATABASE `mybatis_plus_1` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+use `mybatis_plus_1`;
+CREATE TABLE product
+(
+	id BIGINT(20) NOT NULL COMMENT '主键ID',
+	name VARCHAR(30) NULL DEFAULT NULL COMMENT '商品名称',
+	price INT(11) DEFAULT 0 COMMENT '价格',
+	version INT(11) DEFAULT 0 COMMENT '乐观锁版本号',
+	PRIMARY KEY (id)
+);
+```
+
+添加测试数据
+
+```mysql
+INSERT INTO product (id, NAME, price) VALUES (1, '外星人笔记本', 100);
+```
+
+删除mybatis_plus库中的product表
+
+```mysql
+use mybatis_plus;
+DROP TABLE IF EXISTS product;
+```
 
 
 
+### 9.2、引入依赖
 
+```xml
+```
 
+### 9.3、配置多数据源
+
+说明：注释掉之前的数据库连接，添加新配置
+
+```yaml
+```
 
 
 
