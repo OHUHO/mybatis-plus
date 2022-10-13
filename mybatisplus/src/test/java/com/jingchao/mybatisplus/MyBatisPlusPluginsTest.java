@@ -59,7 +59,13 @@ public class MyBatisPlusPluginsTest {
 
         // 小王价格减 30，存入数据库
         productWang.setPrice(productWang.getPrice() - 30);
-        productMapper.updateById(productWang);
+        int result = productMapper.updateById(productWang);
+        if (result == 0){
+            // 操作失败，重试
+            Product productNew = productMapper.selectById(1L);
+            productNew.setPrice(productNew.getPrice() - 30);
+            productMapper.updateById(productNew);
+        }
 
         // 最后结果
         Product product = productMapper.selectById(1L);

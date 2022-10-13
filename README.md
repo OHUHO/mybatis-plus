@@ -1294,6 +1294,87 @@ public void testProduct(){
 
 #### 6.3.4、乐观锁实现流程
 
+数据库中添加version字段 
+
+取出记录时，获取当前version
+
+```mysql
+SELECT id,`name`,price,`version` FROM product WHERE id=1
+```
+
+更新时，version + 1，如果where语句中的version版本不对，则更新失败
+
+```mysql
+UPDATE product SET price=price+50, `version`=`version` + 1 WHERE id=1 AND
+`version`=1
+```
+
+#### 6.3.5、MyBatis-Plus实现乐观锁
+
+**修改实体类**
+
+```java
+@Data
+public class Product {
+    private Long id;
+    private String name;
+    private Integer price;
+    @Version
+    private Integer version;
+}
+```
+
+**添加乐观锁插件配置**
+
+```java
+@Configuration
+@MapperScan("com.jingchao.mybatisplus.mapper")
+public class MyBatisPlusConfig {
+
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor(){
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        // 添加分页插件
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+        // 添加乐观锁插件
+        interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
+        return interceptor;
+    }
+}
+```
+
+**测试修改冲突**
+
+> 小李查询商品信息： 
+>
+> SELECT id,name,price,version FROM t_product WHERE id=? 
+>
+> 小王查询商品信息： 
+>
+> SELECT id,name,price,version FROM t_product WHERE id=? 
+>
+> 小李修改商品价格，自动将version+1 
+>
+> UPDATE t_product SET name=?, price=?, version=? WHERE id=? AND version=? 
+>
+> Parameters: 外星人笔记本(String), 150(Integer), 1(Integer), 1(Long), 0(Integer) 
+>
+> 小王修改商品价格，此时version已更新，条件不成立，修改失败 
+>
+> UPDATE t_product SET name=?, price=?, version=? WHERE id=? AND version=? 
+>
+> Parameters: 外星人笔记本(String), 70(Integer), 1(Integer), 1(Long), 0(Integer) 
+>
+> 最终，小王修改失败，查询价格：150 
+>
+> SELECT id,name,price,version FROM t_product WHERE id=?
+
+**优化流程**
+
+
+
+## 7、通用枚举
+
 
 
 
