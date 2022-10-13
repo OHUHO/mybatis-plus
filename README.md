@@ -1644,4 +1644,37 @@ MyBatis-Plus为我们提供了强大的mapper和service模板，能够大大的�
 
 **MyBatisX一款基于 IDEA 的快速开发插件**，为效率而生。
 
-[MyBatisX插件使用方法](https://baomidou.com/pages/ba5b24/)
+**[MyBatisX插件使用方法](https://baomidou.com/pages/ba5b24/)**
+
+### 10.1、安装插件
+
+IEDEA中直接安装插件就OK
+
+### 10.2、代码快速生成
+
+1. IDEA连接数据库
+
+	| ![image-20221013150151772](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210131507491.png) |
+	| :----------------------------------------------------------: |
+
+2. 使用MyBatisX
+
+	> 鼠标选中表，右键，选择 **MyBatisX-Generator**
+
+3. 配置生成的代码等信息
+
+	| ![image-20221013150624846](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210131506942.png) |
+	| :----------------------------------------------------------: |
+	| ![image-20221013150720725](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210131507032.png) |
+
+
+
+### 10.3、快速生成CRUD
+
+例：
+
+| ![image-20221013152107617](https://cdn.jsdelivr.net/gh/a-jingchao/picture-bed/BlogImages/202210131521702.png) |
+| :----------------------------------------------------------: |
+
+**[详情参见官网](https://baomidou.com/pages/ba5b24/)**
+
