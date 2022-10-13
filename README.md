@@ -206,7 +206,6 @@ public class User {
 
     private String email;
 }
-
 ```
 
 #### 2.4.4、添加mapper
@@ -509,7 +508,6 @@ public void testUpdate(){
 public void testSelect(){
     User user = userMapper.selectById(1L);
     System.out.println(user);
-
 }
 ```
 
@@ -595,7 +593,7 @@ public void testSelect(){
 
 > 说明:
 >
-> - 通用 Service CRUD 封装[IService (opens new window)](https://gitee.com/baomidou/mybatis-plus/blob/3.0/mybatis-plus-extension/src/main/java/com/baomidou/mybatisplus/extension/service/IService.java)接口，进一步封装 CRUD 采用 `get 查询单行` `remove 删除` `list 查询集合` `page 分页` 前缀命名方式区分 `Mapper` 层避免混淆，
+> - 通用 Service CRUD 封装[IService](https://gitee.com/baomidou/mybatis-plus/blob/3.0/mybatis-plus-extension/src/main/java/com/baomidou/mybatisplus/extension/service/IService.java)接口，进一步封装 CRUD 采用 `get 查询单行` `remove 删除` `list 查询集合` `page 分页` 前缀命名方式区分 `Mapper` 层避免混淆，
 > - 泛型 `T` 为任意实体对象
 > - 建议如果存在自定义通用 Service 方法的可能，请创建自己的 `IBaseService` 继承 `Mybatis-Plus` 提供的基类
 > - 对象 `Wrapper` 为 [条件构造器](https://baomidou.com/01.指南/02.核心功能/wrapper.html)
@@ -800,7 +798,7 @@ mybatis-plus:
 	- **主键自增**
 
 		1. 以最常见的用户 ID 为例，可以按照 1000000 的范围大小进行分段，1 ~ 999999 放到表 1中， 1000000 ~ 1999999 放到表2中，以此类推。
-		2. 复杂点：分段大小的选取。分段太小会导致切分后子表数量过多，增加维护复杂度；分段太大可能会 导致单表依然存在性能问题，一般建议分段大小在 100 万至 2000 万之间，具体需要根据业务选取合适 的分段大小。
+		2. 复杂点：分段大小的选取。分段太小会导致切分后子表数量过多，增加维护复杂度；分段太大可能会导致单表依然存在性能问题，一般建议分段大小在 100 万至 2000 万之间，具体需要根据业务选取合适的分段大小。
 		3. 优点：可以随着数据的增加平滑地扩充新的表。例如，现在的用户是 100 万，如果增加到 1000 万， 只需要增加新的表就可以了，原有的数据不需要动。
 		4. 缺点：分布不均匀。假如按照 1000 万来进行分表，有可能某个分段实际存储的数据量只有 1 条，而 另外一个分段实际存储的数据量有 1000 万条。
 
@@ -988,7 +986,6 @@ public void test05(){
              .or()
              .isNull("email")
             );
-
     User user = new User();
     user.setAge(18);
     user.setEmail("jingchao.jc@qq.com");
@@ -1020,7 +1017,6 @@ public void test07(){
     queryWrapper.inSql("uid", "select uid from t_user where uid < 10");
     List<User> list = userMapper.selectList(queryWrapper);
     list.forEach(System.out::println);
-
 }
 ```
 
@@ -1054,12 +1050,12 @@ public void test08(){
 @Test
 public void test09(){
     // 定义查询条件
-    String username = "";
+    String username = "a";
     Integer ageBegin = 18;
     Integer ageEnd = 30;
     QueryWrapper<User> queryWrapper = new QueryWrapper<>();
     if (StringUtils.isNotBlank(username)){
-        queryWrapper.like("user_name", "a");
+        queryWrapper.like("user_name", username);
     }
     if (ageBegin != null){
         queryWrapper.ge("age", ageBegin);
@@ -1142,7 +1138,6 @@ public void test12(){
 @Configuration
 @MapperScan("com.jingchao.mybatisplus.mapper")
 public class MyBatisPlusConfig {
-
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor(){
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
@@ -1419,7 +1414,7 @@ public void testProduct(){
 @Getter
 public enum SexEnums {
     MALE(1,"男"),
-    FEMALE(2,"nv");
+    FEMALE(2,"女");
 
     @EnumValue
     private Integer sex;
