@@ -1557,6 +1557,11 @@ DROP TABLE IF EXISTS product;
 ### 9.2、引入依赖
 
 ```xml
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+    <version>3.5.0</version>
+</dependency>
 ```
 
 ### 9.3、配置多数据源
